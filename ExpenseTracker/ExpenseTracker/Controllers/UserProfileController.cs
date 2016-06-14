@@ -1,0 +1,78 @@
+﻿// Copyright 2016 David Straw
+
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.Http.Controllers;
+using System.Web.Http.OData;
+using ExpenseTracker.DataObjects;
+using ExpenseTracker.Models;
+using Microsoft.Azure.Mobile.Server;
+
+namespace ExpenseTracker.Controllers
+{
+    public class UserProfileController : TableController<UserProfile>
+    {
+        protected override void Initialize(HttpControllerContext controllerContext)
+        {
+            base.Initialize(controllerContext);
+            var context = new MobileServiceContext();
+            DomainManager = new EntityDomainManager<UserProfile>(context, Request);
+        }
+
+        // GET tables/UserProfile
+        public IQueryable<UserProfile> GetAllUserProfiles()
+        {
+            var userSid = this.GetCurrentUserSid();
+
+            return Query().Where(userProfile => userProfile.UserId == userSid);
+        }
+
+        // GET tables/UserProfile/48D68C86-6EA6-4C25-AA33-223FC9A27959
+        public SingleResult<UserProfile> GetUserProfile(string id)
+        {
+            var userSid = this.GetCurrentUserSid();
+
+            var query = Query().Where(userProfile => userProfile.UserId == userSid && userProfile.Id == id);
+
+            return SingleResult.Create(query);
+        }
+
+        // PATCH tables/UserProfile/48D68C86-6EA6-4C25-AA33-223FC9A27959
+        public Task<UserProfile> PatchUserProfile(string id, Delta<UserProfile> patch)
+        {
+            var userSid = this.GetCurrentUserSid();
+
+            var query = Query().Where(userProfile => userProfile.UserId == userSid && userProfile.Id == id);
+            if (!query.Any())
+                NotFound();
+
+            return UpdateAsync(id, patch);
+        }
+
+        // POST tables/UserProfile
+        public async Task<IHttpActionResult> PostUserProfile(UserProfile item)
+        {
+            var userSid = this.GetCurrentUserSid();
+
+            var query = Query().Where(userProfile => userProfile.UserId == userSid);
+            if (query.Any())
+                Conflict();
+
+            UserProfile current = await InsertAsync(item);
+            return CreatedAtRoute("Tables", new { id = current.Id }, current);
+        }
+
+        // DELETE tables/UserProfile/48D68C86-6EA6-4C25-AA33-223FC9A27959
+        public Task DeleteUserProfile(string id)
+        {
+            var userSid = this.GetCurrentUserSid();
+
+            var query = Query().Where(userProfile => userProfile.UserId == userSid && userProfile.Id == id);
+            if (!query.Any())
+                NotFound();
+
+            return DeleteAsync(id);
+        }
+    }
+}
