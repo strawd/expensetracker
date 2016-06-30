@@ -1,6 +1,9 @@
 ﻿// Copyright 2016 David Straw
 
+using System;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
@@ -11,6 +14,7 @@ using Microsoft.Azure.Mobile.Server;
 
 namespace ExpenseTracker.Controllers
 {
+    [Authorize]
     public class UserProfileController : TableController<UserProfile>
     {
         protected override void Initialize(HttpControllerContext controllerContext)
@@ -47,6 +51,9 @@ namespace ExpenseTracker.Controllers
             if (!query.Any())
                 NotFound();
 
+            if (patch.GetChangedPropertyNames().Contains(nameof(UserProfile.UserId), StringComparer.OrdinalIgnoreCase))
+                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, "Unable to modify the UserId property of a user profile."));
+
             return UpdateAsync(id, patch);
         }
 
@@ -59,20 +66,10 @@ namespace ExpenseTracker.Controllers
             if (query.Any())
                 Conflict();
 
+            item.UserId = userSid;
+
             UserProfile current = await InsertAsync(item);
             return CreatedAtRoute("Tables", new { id = current.Id }, current);
-        }
-
-        // DELETE tables/UserProfile/48D68C86-6EA6-4C25-AA33-223FC9A27959
-        public Task DeleteUserProfile(string id)
-        {
-            var userSid = this.GetCurrentUserSid();
-
-            var query = Query().Where(userProfile => userProfile.UserId == userSid && userProfile.Id == id);
-            if (!query.Any())
-                NotFound();
-
-            return DeleteAsync(id);
         }
     }
 }
