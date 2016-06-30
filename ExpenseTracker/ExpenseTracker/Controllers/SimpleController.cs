@@ -10,7 +10,9 @@ namespace ExpenseTracker.Controllers
     {
         public object Get()
         {
-            return "Hello World";
+            var userSid = this.GetCurrentUserSid();
+
+            return $"User SID: {userSid}";
         }
     }
 }

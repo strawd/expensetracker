@@ -11,7 +11,7 @@ namespace ExpenseTracker
         {
             // Get the SID of the current user.
             var claimsPrincipal = controller.User as ClaimsPrincipal;
-            return claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier).Value;
+            return claimsPrincipal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
     }
 }
