@@ -9,12 +9,13 @@ using System.Web.Http;
 using System.Web.Http.Controllers;
 using ExpenseTracker.DataObjects;
 using ExpenseTracker.Models;
-using Microsoft.Azure.Mobile.Server;
+using Microsoft.Azure.Mobile.Server.Config;
 
 namespace ExpenseTracker.Controllers
 {
     [Authorize]
-    public class UserProfileController : TableController<UserProfile>
+    [MobileAppController]
+    public class UserProfileController : ApiController
     {
         private MobileServiceContext _context;
 
@@ -22,10 +23,9 @@ namespace ExpenseTracker.Controllers
         {
             base.Initialize(controllerContext);
             _context = new MobileServiceContext();
-            DomainManager = new EntityDomainManager<UserProfile>(_context, Request);
         }
 
-        // GET tables/UserProfile
+        // GET api/UserProfile
         [HttpGet]
         public IQueryable<UserProfile> GetAllUserProfiles()
         {
@@ -36,7 +36,7 @@ namespace ExpenseTracker.Controllers
             return new[] { new UserProfile { UserId = userSid } }.AsQueryable();
         }
 
-        // GET tables/UserProfile/48D68C86-6EA6-4C25-AA33-223FC9A27959
+        // GET api/UserProfile/48D68C86-6EA6-4C25-AA33-223FC9A27959
         [HttpGet]
         public SingleResult<UserProfile> GetUserProfile(string id)
         {
@@ -62,7 +62,7 @@ namespace ExpenseTracker.Controllers
         //    return UpdateAsync(id, patch);
         //}
 
-        // POST tables/UserProfile
+        // POST api/UserProfile
         [HttpPost]
         public Task<IHttpActionResult> PostUserProfile(UserProfile item)
         {
