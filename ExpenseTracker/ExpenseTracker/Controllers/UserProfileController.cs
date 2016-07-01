@@ -26,6 +26,7 @@ namespace ExpenseTracker.Controllers
         }
 
         // GET tables/UserProfile
+        [HttpGet]
         public IQueryable<UserProfile> GetAllUserProfiles()
         {
             var userSid = this.GetCurrentUserSid();
@@ -34,6 +35,7 @@ namespace ExpenseTracker.Controllers
         }
 
         // GET tables/UserProfile/48D68C86-6EA6-4C25-AA33-223FC9A27959
+        [HttpGet]
         public SingleResult<UserProfile> GetUserProfile(string id)
         {
             var userSid = this.GetCurrentUserSid();
@@ -59,6 +61,7 @@ namespace ExpenseTracker.Controllers
         //}
 
         // POST tables/UserProfile
+        [HttpPost]
         public async Task<IHttpActionResult> PostUserProfile(UserProfile item)
         {
             var userSid = this.GetCurrentUserSid();
