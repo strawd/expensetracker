@@ -17,11 +17,13 @@ namespace ExpenseTracker.Controllers
     [Authorize]
     public class UserProfileController : TableController<UserProfile>
     {
+        private MobileServiceContext _context;
+
         protected override void Initialize(HttpControllerContext controllerContext)
         {
             base.Initialize(controllerContext);
-            var context = new MobileServiceContext();
-            DomainManager = new EntityDomainManager<UserProfile>(context, Request);
+            _context = new MobileServiceContext();
+            DomainManager = new EntityDomainManager<UserProfile>(_context, Request);
         }
 
         // GET tables/UserProfile
@@ -37,7 +39,7 @@ namespace ExpenseTracker.Controllers
         {
             var userSid = this.GetCurrentUserSid();
 
-            var query = Query().Where(userProfile => userProfile.UserId == userSid && userProfile.Id == id);
+            var query = _context.UserProfiles.Where(userProfile => userProfile.UserId == userSid && userProfile.Id == id);
 
             return SingleResult.Create(query);
         }
@@ -47,7 +49,7 @@ namespace ExpenseTracker.Controllers
         {
             var userSid = this.GetCurrentUserSid();
 
-            var query = Query().Where(userProfile => userProfile.UserId == userSid && userProfile.Id == id);
+            var query = _context.UserProfiles.Where(userProfile => userProfile.UserId == userSid && userProfile.Id == id);
             if (!query.Any())
                 NotFound();
 
@@ -62,7 +64,7 @@ namespace ExpenseTracker.Controllers
         {
             var userSid = this.GetCurrentUserSid();
 
-            var query = Query().Where(userProfile => userProfile.UserId == userSid);
+            var query = _context.UserProfiles.Where(userProfile => userProfile.UserId == userSid);
             if (query.Any())
                 Conflict();
 
