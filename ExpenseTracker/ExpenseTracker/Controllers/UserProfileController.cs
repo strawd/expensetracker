@@ -31,7 +31,9 @@ namespace ExpenseTracker.Controllers
         {
             var userSid = this.GetCurrentUserSid();
 
-            return Query().Where(userProfile => userProfile.UserId == userSid);
+            //return Query().Where(userProfile => userProfile.UserId == userSid);
+
+            return new[] { new UserProfile { UserId = userSid } }.AsQueryable();
         }
 
         // GET tables/UserProfile/48D68C86-6EA6-4C25-AA33-223FC9A27959
@@ -62,7 +64,7 @@ namespace ExpenseTracker.Controllers
 
         // POST tables/UserProfile
         [HttpPost]
-        public async Task<IHttpActionResult> PostUserProfile(UserProfile item)
+        public Task<IHttpActionResult> PostUserProfile(UserProfile item)
         {
             var userSid = this.GetCurrentUserSid();
 
@@ -72,7 +74,7 @@ namespace ExpenseTracker.Controllers
 
             item.UserId = userSid;
 
-            return new SimpleActionResult(Request);
+            return Task.FromResult<IHttpActionResult>(new SimpleActionResult(Request));
 
             //UserProfile current = await InsertAsync(item);
             //return CreatedAtRoute("Tables", new { id = current.Id }, current);
