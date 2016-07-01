@@ -19,6 +19,7 @@ namespace ExpenseTracker.Controllers
             result.Add("actionSupportedMethods", JToken.FromObject(ActionContext.ActionDescriptor.SupportedHttpMethods));
             result.Add("requestMethod", JToken.FromObject(Request.Method));
             result.Add("requestUri", JToken.FromObject(Request.RequestUri));
+            result.Add("requestHeaders", JToken.FromObject(Request.Headers));
             return result;
         }
 
@@ -32,6 +33,7 @@ namespace ExpenseTracker.Controllers
             result.Add("actionSupportedMethods", JToken.FromObject(ActionContext.ActionDescriptor.SupportedHttpMethods));
             result.Add("requestMethod", JToken.FromObject(Request.Method));
             result.Add("requestUri", JToken.FromObject(Request.RequestUri));
+            result.Add("requestHeaders", JToken.FromObject(Request.Headers));
             return result;
         }
     }
