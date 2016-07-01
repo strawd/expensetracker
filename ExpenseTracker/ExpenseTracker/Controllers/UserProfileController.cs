@@ -51,7 +51,7 @@ namespace ExpenseTracker.Controllers
 
             var query = _context.UserProfiles.Where(userProfile => userProfile.UserId == userSid && userProfile.Id == id);
             if (!query.Any())
-                NotFound();
+                throw new HttpResponseException(HttpStatusCode.NotFound);
 
             if (patch.GetChangedPropertyNames().Contains(nameof(UserProfile.UserId), StringComparer.OrdinalIgnoreCase))
                 throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, "Unable to modify the UserId property of a user profile."));
@@ -66,7 +66,7 @@ namespace ExpenseTracker.Controllers
 
             var query = _context.UserProfiles.Where(userProfile => userProfile.UserId == userSid);
             if (query.Any())
-                Conflict();
+                return Conflict();
 
             item.UserId = userSid;
 
