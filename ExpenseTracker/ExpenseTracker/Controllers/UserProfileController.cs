@@ -1,13 +1,9 @@
 ﻿// Copyright 2016 David Straw
 
-using System;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
-using System.Web.Http.OData;
 using ExpenseTracker.DataObjects;
 using ExpenseTracker.Models;
 using Microsoft.Azure.Mobile.Server;
@@ -45,28 +41,28 @@ namespace ExpenseTracker.Controllers
         }
 
         // PATCH tables/UserProfile/48D68C86-6EA6-4C25-AA33-223FC9A27959
-        public Task<UserProfile> PatchUserProfile(string id, Delta<UserProfile> patch)
-        {
-            var userSid = this.GetCurrentUserSid();
+        //public Task<UserProfile> PatchUserProfile(string id, Delta<UserProfile> patch)
+        //{
+        //    var userSid = this.GetCurrentUserSid();
 
-            var query = _context.UserProfiles.Where(userProfile => userProfile.UserId == userSid && userProfile.Id == id);
-            if (!query.Any())
-                NotFound();
+        //    var query = _context.UserProfiles.Where(userProfile => userProfile.UserId == userSid && userProfile.Id == id);
+        //    if (!query.Any())
+        //        NotFound();
 
-            if (patch.GetChangedPropertyNames().Contains(nameof(UserProfile.UserId), StringComparer.OrdinalIgnoreCase))
-                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, "Unable to modify the UserId property of a user profile."));
+        //    if (patch.GetChangedPropertyNames().Contains(nameof(UserProfile.UserId), StringComparer.OrdinalIgnoreCase))
+        //        throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, "Unable to modify the UserId property of a user profile."));
 
-            return UpdateAsync(id, patch);
-        }
+        //    return UpdateAsync(id, patch);
+        //}
 
         // POST tables/UserProfile
         public async Task<IHttpActionResult> PostUserProfile(UserProfile item)
         {
             var userSid = this.GetCurrentUserSid();
 
-            var query = _context.UserProfiles.Where(userProfile => userProfile.UserId == userSid);
-            if (query.Any())
-                Conflict();
+            //var query = _context.UserProfiles.Where(userProfile => userProfile.UserId == userSid);
+            //if (query.Any())
+            //    Conflict();
 
             item.UserId = userSid;
 
