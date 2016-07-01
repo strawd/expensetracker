@@ -20,6 +20,7 @@ namespace ExpenseTracker.Controllers
             result.Add("requestMethod", JToken.FromObject(Request.Method));
             result.Add("requestUri", JToken.FromObject(Request.RequestUri));
             result.Add("requestHeaders", JToken.FromObject(Request.Headers));
+            result.Add("requestContent", JToken.FromObject(Request.Content.ReadAsStringAsync().Result));
             return result;
         }
 
@@ -34,6 +35,7 @@ namespace ExpenseTracker.Controllers
             result.Add("requestMethod", JToken.FromObject(Request.Method));
             result.Add("requestUri", JToken.FromObject(Request.RequestUri));
             result.Add("requestHeaders", JToken.FromObject(Request.Headers));
+            result.Add("requestContent", JToken.FromObject(Request.Content.ReadAsStringAsync().Result));
             return result;
         }
     }
