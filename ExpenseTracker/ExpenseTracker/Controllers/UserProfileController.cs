@@ -1,6 +1,9 @@
 ﻿// Copyright 2016 David Straw
 
 using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
@@ -66,8 +69,27 @@ namespace ExpenseTracker.Controllers
 
             item.UserId = userSid;
 
-            UserProfile current = await InsertAsync(item);
-            return CreatedAtRoute("Tables", new { id = current.Id }, current);
+            return new SimpleActionResult(Request);
+
+            //UserProfile current = await InsertAsync(item);
+            //return CreatedAtRoute("Tables", new { id = current.Id }, current);
+        }
+
+        class SimpleActionResult : IHttpActionResult
+        {
+            HttpRequestMessage _request;
+
+            public SimpleActionResult(HttpRequestMessage request)
+            {
+                _request = request;
+            }
+
+            public Task<HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken)
+            {
+                var response = _request.CreateResponse(System.Net.HttpStatusCode.Created);
+                response.Content = new StringContent("{ \"Hello\": \"World\" }", Encoding.UTF8, "application/json");
+                return Task.FromResult(response);
+            }
         }
     }
 }
