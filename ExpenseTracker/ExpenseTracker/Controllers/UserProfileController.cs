@@ -4,7 +4,6 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
@@ -12,7 +11,6 @@ using System.Web.Http.OData;
 using ExpenseTracker.DataObjects;
 using ExpenseTracker.Models;
 using Microsoft.Azure.Mobile.Server;
-using Microsoft.Azure.Mobile.Server.Authentication;
 
 namespace ExpenseTracker.Controllers
 {
@@ -71,35 +69,6 @@ namespace ExpenseTracker.Controllers
                 return Conflict();
 
             item.UserId = userSid;
-
-            // Try to get the user's name from Microsoft
-            var claimsPrinciple = this.User as ClaimsPrincipal;
-            if (claimsPrinciple != null)
-            {
-                var msCredentials = claimsPrinciple.Identities.OfType<MicrosoftAccountCredentials>().FirstOrDefault();
-
-                if (msCredentials != null)
-                {
-                    if (msCredentials.AccessToken != null)
-                    {
-                        var httpClient = new HttpClient();
-                        var userInfoResponse = await httpClient.GetAsync($"https://apis.live.net/v5.0/me/?method=GET&access_token={msCredentials.AccessToken}");
-
-                        if (userInfoResponse.IsSuccessStatusCode)
-                        {
-                            item.GivenName = await userInfoResponse.Content.ReadAsStringAsync();
-                        }
-                        else
-                            item.GivenName = $"GET call failed: {userInfoResponse.StatusCode} {userInfoResponse.ReasonPhrase}";
-                    }
-                    else
-                        item.GivenName = "AccessToken is null";
-                }
-                else
-                    item.GivenName = "no MicrosoftAccountCredentials found";
-            }
-            else
-                item.GivenName = "not a ClaimsPrincipal";
 
             UserProfile current = await InsertAsync(item);
             return CreatedAtRoute("Tables", new { id = current.Id }, current);
