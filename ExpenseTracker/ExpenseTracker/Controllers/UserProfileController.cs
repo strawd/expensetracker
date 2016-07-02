@@ -11,6 +11,7 @@ using System.Web.Http.OData;
 using ExpenseTracker.DataObjects;
 using ExpenseTracker.Models;
 using Microsoft.Azure.Mobile.Server;
+using Microsoft.Azure.Mobile.Server.Authentication;
 
 namespace ExpenseTracker.Controllers
 {
@@ -29,18 +30,9 @@ namespace ExpenseTracker.Controllers
         // GET tables/UserProfile
         public IQueryable<UserProfile> GetAllUserProfiles()
         {
-            try
-            {
-                var userSid = this.GetCurrentUserSid();
+            var userSid = this.GetCurrentUserSid();
 
-                return Query().Where(userProfile => userProfile.UserId == userSid);
-            }
-            catch (Exception ex)
-            {
-                var response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                response.Content = new StringContent($"{ex.GetType().Name}: {ex.Message}");
-                throw new HttpResponseException(response);
-            }
+            return Query().Where(userProfile => userProfile.UserId == userSid);
         }
 
         // GET tables/UserProfile/48D68C86-6EA6-4C25-AA33-223FC9A27959
@@ -78,6 +70,29 @@ namespace ExpenseTracker.Controllers
                 return Conflict();
 
             item.UserId = userSid;
+
+            // Try to get the user's name from Microsoft
+            var msCredentials = this.User.Identity as MicrosoftAccountCredentials;
+            if (msCredentials != null)
+            {
+                if (msCredentials.AccessToken != null)
+                {
+                    var httpClient = new HttpClient();
+                    var userInfoResponse = await httpClient.GetAsync($"https://apis.live.net/v5.0/me/?method=GET&access_token={msCredentials.AccessToken}");
+
+                    if (userInfoResponse.IsSuccessStatusCode)
+                    {
+                        item.GivenName = await userInfoResponse.Content.ReadAsStringAsync();
+                    }
+                    else
+                        item.GivenName = $"GET call failed: {userInfoResponse.StatusCode} {userInfoResponse.ReasonPhrase}";
+                }
+                else
+                    item.GivenName = "AccessToken is null";
+            }
+            else
+                item.GivenName = "not a MicrosoftAccountCredentials";
+
             item.GivenName = this.GetCurrentUserGivenName();
 
             UserProfile current = await InsertAsync(item);
