@@ -29,9 +29,18 @@ namespace ExpenseTracker.Controllers
         // GET tables/UserProfile
         public IQueryable<UserProfile> GetAllUserProfiles()
         {
-            var userSid = this.GetCurrentUserSid();
+            try
+            {
+                var userSid = this.GetCurrentUserSid();
 
-            return Query().Where(userProfile => userProfile.UserId == userSid);
+                return Query().Where(userProfile => userProfile.UserId == userSid);
+            }
+            catch (Exception ex)
+            {
+                var response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                response.Content = new StringContent($"{ex.GetType().Name}: {ex.Message}");
+                throw new HttpResponseException(response);
+            }
         }
 
         // GET tables/UserProfile/48D68C86-6EA6-4C25-AA33-223FC9A27959
