@@ -28,12 +28,19 @@ namespace ExpenseTracker.Controllers
         // GET tables/ExpenseItem
         public IQueryable<ExpenseItem> GetAllExpenseItem()
         {
-            var userSid = this.GetCurrentUserSid();
-            var userAccounts = _context.AccountUsers
-                .Where(accountUser => accountUser.UserId == userSid)
-                .Select(accountUser => accountUser.AccountId);
+            try
+            {
+                var userSid = this.GetCurrentUserSid();
+                var userAccounts = _context.AccountUsers
+                    .Where(accountUser => accountUser.UserId == userSid)
+                    .Select(accountUser => accountUser.AccountId);
 
-            return Query().Where(expenseItem => userAccounts.Contains(expenseItem.AccountId));
+                return Query().Where(expenseItem => userAccounts.Contains(expenseItem.AccountId));
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.InternalServerError, $"{ex.GetType().Name}: {ex.Message}"));
+            }
         }
 
         // GET tables/ExpenseItem/48D68C86-6EA6-4C25-AA33-223FC9A27959
