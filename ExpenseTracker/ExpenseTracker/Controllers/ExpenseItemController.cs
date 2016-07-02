@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
@@ -39,7 +40,9 @@ namespace ExpenseTracker.Controllers
             }
             catch (Exception ex)
             {
-                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.InternalServerError, $"{ex.GetType().Name}: {ex.Message}"));
+                var response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                response.Content = new StringContent($"{ex.GetType().Name}: {ex.Message}", Encoding.UTF8, "application/text");
+                throw new HttpResponseException(response);
             }
         }
 
