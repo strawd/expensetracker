@@ -73,7 +73,7 @@ namespace ExpenseTracker.Controllers
             item.UserId = userSid;
 
             // Try to get the user's name from Microsoft
-            var claimsPrinciple = this.User.Identity as ClaimsPrincipal;
+            var claimsPrinciple = this.User as ClaimsPrincipal;
             if (claimsPrinciple != null)
             {
                 var msCredentials = claimsPrinciple.Identities.OfType<MicrosoftAccountCredentials>().FirstOrDefault();
