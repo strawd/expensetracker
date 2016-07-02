@@ -61,7 +61,10 @@ namespace ExpenseTracker.Controllers
                 throw new HttpResponseException(HttpStatusCode.NotFound);
 
             if (patch.GetChangedPropertyNames().Contains(nameof(ExpenseItem.AccountId), StringComparer.OrdinalIgnoreCase))
-                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, "Unable to modify the AccountIf property of an expense item."));
+                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, "Unable to modify the AccountId property of an expense item."));
+
+            if (patch.GetChangedPropertyNames().Contains(nameof(ExpenseItem.CreatedBy), StringComparer.OrdinalIgnoreCase))
+                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, "Unable to modify the CreatedBy property of an expense item."));
 
             return UpdateAsync(id, patch);
         }
@@ -78,6 +81,8 @@ namespace ExpenseTracker.Controllers
 
             if (item.AccountId == null)
                 throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, "Account not found"));
+
+            item.CreatedBy = userSid;
 
             ExpenseItem current = await InsertAsync(item);
             return CreatedAtRoute("Tables", new { id = current.Id }, current);
