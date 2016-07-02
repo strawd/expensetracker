@@ -1,6 +1,7 @@
 ﻿// Copyright 2016 David Straw
 
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
@@ -42,7 +43,7 @@ namespace ExpenseTracker.Controllers
                 .Where(accountUser => accountUser.UserId == userSid)
                 .Select(accountUser => accountUser.AccountId);
 
-            var query = Query().Where(account => userAccounts.Contains(account.Id) && account.Id == id);
+            var query = _context.Accounts.Where(account => userAccounts.Contains(account.Id) && account.Id == id);
             return SingleResult.Create(query);
         }
 
@@ -54,9 +55,9 @@ namespace ExpenseTracker.Controllers
                 .Where(accountUser => accountUser.UserId == userSid)
                 .Select(accountUser => accountUser.AccountId);
 
-            var query = Query().Where(account => userAccounts.Contains(account.Id) && account.Id == id);
+            var query = _context.Accounts.Where(account => userAccounts.Contains(account.Id) && account.Id == id);
             if (!query.Any())
-                NotFound();
+                throw new HttpResponseException(HttpStatusCode.NotFound);
 
             return UpdateAsync(id, patch);
         }
@@ -69,9 +70,9 @@ namespace ExpenseTracker.Controllers
                 .Where(accountUser => accountUser.UserId == userSid)
                 .Select(accountUser => accountUser.AccountId);
 
-            var query = Query().Where(account => userAccounts.Contains(account.Id));
+            var query = _context.Accounts.Where(account => userAccounts.Contains(account.Id));
             if (query.Any())
-                Conflict();
+                return Conflict();
 
             Account current = await InsertAsync(item);
             return CreatedAtRoute("Tables", new { id = current.Id }, current);
@@ -85,9 +86,9 @@ namespace ExpenseTracker.Controllers
                 .Where(accountUser => accountUser.UserId == userSid)
                 .Select(accountUser => accountUser.AccountId);
 
-            var query = Query().Where(account => userAccounts.Contains(account.Id) && account.Id == id);
+            var query = _context.Accounts.Where(account => userAccounts.Contains(account.Id) && account.Id == id);
             if (!query.Any())
-                NotFound();
+                throw new HttpResponseException(HttpStatusCode.NotFound);
 
             return DeleteAsync(id);
         }
