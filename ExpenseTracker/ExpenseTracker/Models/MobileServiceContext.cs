@@ -33,6 +33,8 @@ namespace ExpenseTracker.Models
 
         public DbSet<UserProfile> UserProfiles { get; set; }
 
+        public DbSet<ExpenseItem> ExpenseItems { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Add(

@@ -7,5 +7,7 @@ namespace ExpenseTracker.DataObjects
     public class UserProfile : EntityData
     {
         public string UserId { get; set; }
+
+        public string GivenName { get; set; }
     }
 }

@@ -69,6 +69,7 @@ namespace ExpenseTracker.Controllers
                 return Conflict();
 
             item.UserId = userSid;
+            item.GivenName = this.GetCurrentUserGivenName();
 
             UserProfile current = await InsertAsync(item);
             return CreatedAtRoute("Tables", new { id = current.Id }, current);

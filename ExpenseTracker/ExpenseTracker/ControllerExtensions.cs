@@ -13,5 +13,11 @@ namespace ExpenseTracker
             var claimsPrincipal = controller.User as ClaimsPrincipal;
             return claimsPrincipal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
+
+        public static string GetCurrentUserGivenName(this ApiController controller)
+        {
+            var claimsPrincipal = controller.User as ClaimsPrincipal;
+            return claimsPrincipal?.FindFirst(ClaimTypes.GivenName)?.Value;
+        }
     }
 }
