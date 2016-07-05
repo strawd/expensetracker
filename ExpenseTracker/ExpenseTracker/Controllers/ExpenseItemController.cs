@@ -1,6 +1,7 @@
 ﻿// Copyright 2016 David Straw
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -28,10 +29,14 @@ namespace ExpenseTracker.Controllers
         // GET tables/ExpenseItem
         public IQueryable<ExpenseItem> GetAllExpenseItem()
         {
+            Trace.TraceInformation("ExpenseItemController: In GetAllExpenseItem");
+
             var userSid = this.GetCurrentUserSid();
             var userAccounts = _context.AccountUsers
                 .Where(accountUser => accountUser.UserId == userSid)
                 .Select(accountUser => accountUser.AccountId);
+
+            Trace.TraceInformation("ExpenseItemController: Retrieved user accounts");
 
             return Query().Where(expenseItem => userAccounts.Contains(expenseItem.AccountId));
         }

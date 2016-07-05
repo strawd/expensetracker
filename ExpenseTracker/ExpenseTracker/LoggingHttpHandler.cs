@@ -18,7 +18,7 @@ namespace ExpenseTracker
             {
                 var response = await base.SendAsync(request, cancellationToken);
 
-                Trace.TraceInformation($"LoggingHttpHandler: Responding with {response.StatusCode} ({response.ReasonPhrase}) to {request.RequestUri}");
+                Trace.TraceInformation($"LoggingHttpHandler: Responding with {(int)response.StatusCode} ({response.ReasonPhrase}) to {request.RequestUri}");
 
                 return response;
             }
