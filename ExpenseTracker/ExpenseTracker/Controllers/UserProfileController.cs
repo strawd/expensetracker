@@ -1,6 +1,7 @@
 ﻿// Copyright 2016 David Straw
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -29,6 +30,8 @@ namespace ExpenseTracker.Controllers
         // GET tables/UserProfile
         public IQueryable<UserProfile> GetAllUserProfiles()
         {
+            Trace.TraceInformation("Trace log test");
+
             var userSid = this.GetCurrentUserSid();
 
             return Query().Where(userProfile => userProfile.UserId == userSid);
