@@ -29,16 +29,29 @@ namespace ExpenseTracker.Controllers
         // GET tables/ExpenseItem
         public IQueryable<ExpenseItem> GetAllExpenseItem()
         {
-            Trace.TraceInformation("ExpenseItemController: In GetAllExpenseItem");
+            try
+            {
+                var userSid = this.GetCurrentUserSid();
+                var userAccounts = _context.AccountUsers
+                    .Where(accountUser => accountUser.UserId == userSid)
+                    .Select(accountUser => accountUser.AccountId);
 
-            var userSid = this.GetCurrentUserSid();
-            var userAccounts = _context.AccountUsers
-                .Where(accountUser => accountUser.UserId == userSid)
-                .Select(accountUser => accountUser.AccountId);
+                var query = Query().Where(expenseItem => userAccounts.Contains(expenseItem.AccountId));
 
-            Trace.TraceInformation("ExpenseItemController: Retrieved user accounts");
+                Trace.TraceInformation("ExpenseItemController: Successfully created query");
 
-            return Query().Where(expenseItem => userAccounts.Contains(expenseItem.AccountId));
+                query.GetEnumerator().MoveNext();
+
+                Trace.TraceInformation("ExpenseItemController: Successfully enumerated query");
+
+                return query;
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"ExpenseItemController: Exception thrown from GetAllExpenseItem:\n{ex.ToString()}");
+
+                throw;
+            }
         }
 
         // GET tables/ExpenseItem/48D68C86-6EA6-4C25-AA33-223FC9A27959
