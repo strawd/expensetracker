@@ -1,7 +1,6 @@
 ﻿// Copyright 2016 David Straw
 
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -29,29 +28,12 @@ namespace ExpenseTracker.Controllers
         // GET tables/ExpenseItem
         public IQueryable<ExpenseItem> GetAllExpenseItem()
         {
-            try
-            {
-                var userSid = this.GetCurrentUserSid();
-                var userAccounts = _context.AccountUsers
-                    .Where(accountUser => accountUser.UserId == userSid)
-                    .Select(accountUser => accountUser.AccountId);
+            var userSid = this.GetCurrentUserSid();
+            var userAccounts = _context.AccountUsers
+                .Where(accountUser => accountUser.UserId == userSid)
+                .Select(accountUser => accountUser.AccountId);
 
-                var query = Query().Where(expenseItem => userAccounts.Contains(expenseItem.AccountId));
-
-                Trace.TraceInformation("ExpenseItemController: Successfully created query");
-
-                query.GetEnumerator().MoveNext();
-
-                Trace.TraceInformation("ExpenseItemController: Successfully enumerated query");
-
-                return query;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"ExpenseItemController: Exception thrown from GetAllExpenseItem:\n{ex.ToString()}");
-
-                throw;
-            }
+            return Query().Where(expenseItem => userAccounts.Contains(expenseItem.AccountId));
         }
 
         // GET tables/ExpenseItem/48D68C86-6EA6-4C25-AA33-223FC9A27959
