@@ -34,6 +34,8 @@ namespace ExpenseTracker
                 });
             }
 
+            config.MessageHandlers.Add(new LoggingHttpHandler());
+
             app.UseWebApi(config);
         }
     }

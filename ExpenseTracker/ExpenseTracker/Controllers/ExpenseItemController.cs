@@ -4,7 +4,6 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
@@ -29,21 +28,12 @@ namespace ExpenseTracker.Controllers
         // GET tables/ExpenseItem
         public IQueryable<ExpenseItem> GetAllExpenseItem()
         {
-            try
-            {
-                var userSid = this.GetCurrentUserSid();
-                var userAccounts = _context.AccountUsers
-                    .Where(accountUser => accountUser.UserId == userSid)
-                    .Select(accountUser => accountUser.AccountId);
+            var userSid = this.GetCurrentUserSid();
+            var userAccounts = _context.AccountUsers
+                .Where(accountUser => accountUser.UserId == userSid)
+                .Select(accountUser => accountUser.AccountId);
 
-                return Query().Where(expenseItem => userAccounts.Contains(expenseItem.AccountId));
-            }
-            catch (Exception ex)
-            {
-                var response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                response.Content = new StringContent($"{ex.GetType().Name}: {ex.Message}", Encoding.UTF8, "application/text");
-                throw new HttpResponseException(response);
-            }
+            return Query().Where(expenseItem => userAccounts.Contains(expenseItem.AccountId));
         }
 
         // GET tables/ExpenseItem/48D68C86-6EA6-4C25-AA33-223FC9A27959

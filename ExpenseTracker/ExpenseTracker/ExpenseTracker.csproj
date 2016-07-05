@@ -218,6 +218,7 @@
     <Compile Include="DataObjects\AccountUser.cs" />
     <Compile Include="DataObjects\ExpenseItem.cs" />
     <Compile Include="DataObjects\UserProfile.cs" />
+    <Compile Include="LoggingHttpHandler.cs" />
     <Compile Include="Models\MobileServiceContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
