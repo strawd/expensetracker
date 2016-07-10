@@ -14,6 +14,7 @@ using Microsoft.Azure.Mobile.Server;
 
 namespace ExpenseTracker.Controllers
 {
+    [Authorize]
     public class ExpensePeriodController : TableController<ExpensePeriod>
     {
         private MobileServiceContext _context;
