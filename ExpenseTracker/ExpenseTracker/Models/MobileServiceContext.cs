@@ -35,6 +35,8 @@ namespace ExpenseTracker.Models
 
         public DbSet<ExpenseItem> ExpenseItems { get; set; }
 
+        public DbSet<ExpensePeriod> ExpensePeriods { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Add(
