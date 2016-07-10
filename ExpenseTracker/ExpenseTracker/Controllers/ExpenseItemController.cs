@@ -60,13 +60,23 @@ namespace ExpenseTracker.Controllers
             if (!query.Any())
                 throw new HttpResponseException(HttpStatusCode.NotFound);
 
-            if (patch.GetChangedPropertyNames().Contains(nameof(ExpenseItem.AccountId), StringComparer.OrdinalIgnoreCase))
-                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, "Unable to modify the AccountId property of an expense item."));
+            var changedProperties = patch.GetChangedPropertyNames().ToList();
+            var filteredDelta = new Delta<ExpenseItem>();
 
-            if (patch.GetChangedPropertyNames().Contains(nameof(ExpenseItem.CreatedBy), StringComparer.OrdinalIgnoreCase))
-                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, "Unable to modify the CreatedBy property of an expense item."));
+            if (changedProperties.Contains(nameof(ExpenseItem.Amount), StringComparer.OrdinalIgnoreCase))
+            {
+                filteredDelta.TrySetPropertyValue(nameof(ExpenseItem.Amount), patch.GetEntity().Amount);
+            }
+            if (changedProperties.Contains(nameof(ExpenseItem.Date), StringComparer.OrdinalIgnoreCase))
+            {
+                filteredDelta.TrySetPropertyValue(nameof(ExpenseItem.Date), patch.GetEntity().Date);
+            }
+            if (changedProperties.Contains(nameof(ExpenseItem.Description), StringComparer.OrdinalIgnoreCase))
+            {
+                filteredDelta.TrySetPropertyValue(nameof(ExpenseItem.Description), patch.GetEntity().Description);
+            }
 
-            return UpdateAsync(id, patch);
+            return UpdateAsync(id, filteredDelta);
         }
 
         // POST tables/ExpenseItem
