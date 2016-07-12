@@ -37,7 +37,13 @@ namespace ExpenseTracker.Controllers
                 .FirstOrDefault();
 
             if (currentExpensePeriod == null)
-                return new CurrentExpensePeriodSummary { AmountAvailable = 0, AmountRemaining = 0, ExpensesCount = 0 };
+                return new CurrentExpensePeriodSummary
+                {
+                    AmountAvailable = 0,
+                    AmountRemaining = 0,
+                    ExpensesCount = 0,
+                    StartDate = DateTimeOffset.Now
+                };
 
             var expenses = _context.ExpenseItems
                 .Where(x => userAccounts.Contains(x.AccountId))
@@ -49,7 +55,8 @@ namespace ExpenseTracker.Controllers
             {
                 AmountAvailable = currentExpensePeriod.AmountAvailable,
                 AmountRemaining = currentExpensePeriod.AmountAvailable - expenses.Aggregate(0m, (sum, item) => sum + item.Amount),
-                ExpensesCount = expenses.Count
+                ExpensesCount = expenses.Count,
+                StartDate = currentExpensePeriod.StartDate
             };
         }
     }
