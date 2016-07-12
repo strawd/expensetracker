@@ -15,11 +15,11 @@ namespace ExpenseTracker
         {
             HttpConfiguration config = new HttpConfiguration();
 
+            config.MapHttpAttributeRoutes();
+
             new MobileAppConfiguration()
                 .UseDefaultConfiguration()
                 .ApplyTo(config);
-
-            config.MapHttpAttributeRoutes();
 
             MobileAppSettingsDictionary settings = config.GetMobileAppSettingsProvider().GetMobileAppSettings();
 
