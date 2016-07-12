@@ -214,9 +214,11 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ExpenseItemController.cs" />
     <Compile Include="Controllers\ExpensePeriodController.cs" />
+    <Compile Include="Controllers\SummaryController.cs" />
     <Compile Include="Controllers\UserProfileController.cs" />
     <Compile Include="DataObjects\Account.cs" />
     <Compile Include="DataObjects\AccountUser.cs" />
+    <Compile Include="DataObjects\CurrentExpensePeriodSummary.cs" />
     <Compile Include="DataObjects\ExpenseItem.cs" />
     <Compile Include="DataObjects\ExpensePeriod.cs" />
     <Compile Include="DataObjects\UserProfile.cs" />

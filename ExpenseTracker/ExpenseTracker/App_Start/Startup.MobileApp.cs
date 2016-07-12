@@ -19,6 +19,8 @@ namespace ExpenseTracker
                 .UseDefaultConfiguration()
                 .ApplyTo(config);
 
+            config.MapHttpAttributeRoutes();
+
             MobileAppSettingsDictionary settings = config.GetMobileAppSettingsProvider().GetMobileAppSettings();
 
             if (string.IsNullOrEmpty(settings.HostName))
