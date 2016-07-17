@@ -1,6 +1,7 @@
 ﻿// Copyright 2016 David Straw
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using ExpenseTracker.DataObjects;
@@ -23,7 +24,7 @@ namespace ExpenseTracker.Controllers
 
         [HttpGet]
         [Route("CurrentExpensePeriod")]
-        public CurrentExpensePeriodSummary GetCurrentExpensePeriodSummary()
+        public ExpensePeriodSummary GetCurrentExpensePeriodSummary()
         {
             var userSid = this.GetCurrentUserSid();
             var userAccounts = _context.AccountUsers
@@ -37,7 +38,7 @@ namespace ExpenseTracker.Controllers
                 .FirstOrDefault();
 
             if (currentExpensePeriod == null)
-                return new CurrentExpensePeriodSummary
+                return new ExpensePeriodSummary
                 {
                     AmountAvailable = 0,
                     AmountRemaining = 0,
@@ -62,13 +63,56 @@ namespace ExpenseTracker.Controllers
 
             var expenses = expensesQuery.ToList();
 
-            return new CurrentExpensePeriodSummary
+            return new ExpensePeriodSummary
             {
                 AmountAvailable = currentExpensePeriod.AmountAvailable,
                 AmountRemaining = currentExpensePeriod.AmountAvailable - expenses.Aggregate(0m, (sum, item) => sum + item.Amount),
                 ExpensesCount = expenses.Count,
                 StartDate = currentExpensePeriod.StartDate
             };
+        }
+
+        [HttpGet]
+        [Route("ExpensePeriods")]
+        public List<ExpensePeriodSummary> GetExpensePeriodSummaries()
+        {
+            var userSid = this.GetCurrentUserSid();
+            var userAccounts = _context.AccountUsers
+                .Where(accountUser => accountUser.UserId == userSid)
+                .Select(accountUser => accountUser.AccountId);
+
+            var expensePeriods = _context.ExpensePeriods
+                .Where(x => userAccounts.Contains(x.AccountId))
+                .Where(x => x.StartDate <= DateTimeOffset.Now)
+                .Take(10)
+                .OrderByDescending(x => x.StartDate)
+                .ToList();
+
+            var summaries = new List<ExpensePeriodSummary>();
+
+            for (int i = 0; i < expensePeriods.Count; i++)
+            {
+                var expensePeriod = expensePeriods[i];
+
+                var expensesQuery = _context.ExpenseItems
+                    .Where(x => userAccounts.Contains(x.AccountId))
+                    .Where(x => x.Date >= expensePeriod.StartDate);
+
+                if (i > 0)
+                    expensesQuery = expensesQuery.Where(x => x.Date < expensePeriods[i - 1].StartDate);
+
+                var expenses = expensesQuery.ToList();
+
+                summaries.Add(new ExpensePeriodSummary
+                {
+                    AmountAvailable = expensePeriod.AmountAvailable,
+                    AmountRemaining = expensePeriod.AmountAvailable - expenses.Aggregate(0m, (sum, item) => sum + item.Amount),
+                    ExpensesCount = expenses.Count,
+                    StartDate = expensePeriod.StartDate
+                });
+            }
+
+            return summaries;
         }
     }
 }
