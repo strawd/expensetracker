@@ -113,7 +113,10 @@ namespace ExpenseTracker.Controllers
                 Trace.TraceInformation($"GetExpensePeriodSummaries: Trace B");
 
                 if (i > 0)
-                    expensesQuery = expensesQuery.Where(x => x.Date < expensePeriods[i - 1].StartDate);
+                {
+                    var followingStartDate = expensePeriods[i - 1].StartDate;
+                    expensesQuery = expensesQuery.Where(x => x.Date < followingStartDate);
+                }
 
                 Trace.TraceInformation($"GetExpensePeriodSummaries: Trace C");
 
