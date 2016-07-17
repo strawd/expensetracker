@@ -100,14 +100,22 @@ namespace ExpenseTracker.Controllers
 
             for (int i = 0; i < expensePeriods.Count; i++)
             {
+                Trace.TraceInformation($"GetExpensePeriodSummaries: Processing expense period {i}");
+
                 var expensePeriod = expensePeriods[i];
+
+                Trace.TraceInformation($"GetExpensePeriodSummaries: Trace A");
 
                 var expensesQuery = _context.ExpenseItems
                     .Where(x => userAccounts.Contains(x.AccountId))
                     .Where(x => x.Date >= expensePeriod.StartDate);
 
+                Trace.TraceInformation($"GetExpensePeriodSummaries: Trace B");
+
                 if (i > 0)
                     expensesQuery = expensesQuery.Where(x => x.Date < expensePeriods[i - 1].StartDate);
+
+                Trace.TraceInformation($"GetExpensePeriodSummaries: Trace C");
 
                 var expenses = expensesQuery.ToList();
 
@@ -120,6 +128,8 @@ namespace ExpenseTracker.Controllers
                     ExpensesCount = expenses.Count,
                     StartDate = expensePeriod.StartDate
                 });
+
+                Trace.TraceInformation($"GetExpensePeriodSummaries: Summary added for expense period {i}");
             }
 
             Trace.TraceInformation($"GetExpensePeriodSummaries: Returning summaries");
