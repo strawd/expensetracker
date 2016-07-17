@@ -45,11 +45,22 @@ namespace ExpenseTracker.Controllers
                     StartDate = DateTimeOffset.Now
                 };
 
-            var expenses = _context.ExpenseItems
+            var nextExpensePeriod = _context.ExpensePeriods
                 .Where(x => userAccounts.Contains(x.AccountId))
-                .Where(x => x.Date >= currentExpensePeriod.StartDate)
-                .Where(x => x.Date <= DateTimeOffset.Now)
-                .ToList();
+                .Where(x => x.StartDate > DateTimeOffset.Now)
+                .OrderBy(x => x.StartDate)
+                .FirstOrDefault();
+
+            var expensesQuery = _context.ExpenseItems
+                .Where(x => userAccounts.Contains(x.AccountId))
+                .Where(x => x.Date >= currentExpensePeriod.StartDate);
+
+            if (nextExpensePeriod != null)
+            {
+                expensesQuery = expensesQuery.Where(x => x.Date < nextExpensePeriod.StartDate);
+            }
+
+            var expenses = expensesQuery.ToList();
 
             return new CurrentExpensePeriodSummary
             {
