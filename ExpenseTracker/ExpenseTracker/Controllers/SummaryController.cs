@@ -77,15 +77,11 @@ namespace ExpenseTracker.Controllers
         [Route("ExpensePeriods")]
         public List<ExpensePeriodSummary> GetExpensePeriodSummaries()
         {
-            Trace.TraceInformation("In GetExpensePeriodSummaries");
-
             var userSid = this.GetCurrentUserSid();
             var userAccounts = _context.AccountUsers
                 .Where(accountUser => accountUser.UserId == userSid)
                 .Select(accountUser => accountUser.AccountId)
                 .ToList();
-
-            Trace.TraceInformation($"GetExpensePeriodSummaries: {userAccounts.Count} accounts");
 
             var expensePeriods = _context.ExpensePeriods
                 .Where(x => userAccounts.Contains(x.AccountId))
@@ -94,23 +90,15 @@ namespace ExpenseTracker.Controllers
                 .OrderByDescending(x => x.StartDate)
                 .ToList();
 
-            Trace.TraceInformation($"GetExpensePeriodSummaries: {expensePeriods.Count} expense periods");
-
             var summaries = new List<ExpensePeriodSummary>();
 
             for (int i = 0; i < expensePeriods.Count; i++)
             {
-                Trace.TraceInformation($"GetExpensePeriodSummaries: Processing expense period {i}");
-
                 var expensePeriod = expensePeriods[i];
-
-                Trace.TraceInformation($"GetExpensePeriodSummaries: Trace A");
 
                 var expensesQuery = _context.ExpenseItems
                     .Where(x => userAccounts.Contains(x.AccountId))
                     .Where(x => x.Date >= expensePeriod.StartDate);
-
-                Trace.TraceInformation($"GetExpensePeriodSummaries: Trace B");
 
                 if (i > 0)
                 {
@@ -118,11 +106,7 @@ namespace ExpenseTracker.Controllers
                     expensesQuery = expensesQuery.Where(x => x.Date < followingStartDate);
                 }
 
-                Trace.TraceInformation($"GetExpensePeriodSummaries: Trace C");
-
                 var expenses = expensesQuery.ToList();
-
-                Trace.TraceInformation($"GetExpensePeriodSummaries: {expenses.Count} expenses in expense period {i}");
 
                 summaries.Add(new ExpensePeriodSummary
                 {
@@ -131,11 +115,7 @@ namespace ExpenseTracker.Controllers
                     ExpensesCount = expenses.Count,
                     StartDate = expensePeriod.StartDate
                 });
-
-                Trace.TraceInformation($"GetExpensePeriodSummaries: Summary added for expense period {i}");
             }
-
-            Trace.TraceInformation($"GetExpensePeriodSummaries: Returning summaries");
 
             return summaries;
         }
