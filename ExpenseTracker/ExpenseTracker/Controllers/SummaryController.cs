@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web.Http;
 using ExpenseTracker.DataObjects;
@@ -76,10 +77,15 @@ namespace ExpenseTracker.Controllers
         [Route("ExpensePeriods")]
         public List<ExpensePeriodSummary> GetExpensePeriodSummaries()
         {
+            Trace.TraceInformation("In GetExpensePeriodSummaries");
+
             var userSid = this.GetCurrentUserSid();
             var userAccounts = _context.AccountUsers
                 .Where(accountUser => accountUser.UserId == userSid)
-                .Select(accountUser => accountUser.AccountId);
+                .Select(accountUser => accountUser.AccountId)
+                .ToList();
+
+            Trace.TraceInformation($"GetExpensePeriodSummaries: {userAccounts.Count} accounts");
 
             var expensePeriods = _context.ExpensePeriods
                 .Where(x => userAccounts.Contains(x.AccountId))
@@ -87,6 +93,8 @@ namespace ExpenseTracker.Controllers
                 .Take(10)
                 .OrderByDescending(x => x.StartDate)
                 .ToList();
+
+            Trace.TraceInformation($"GetExpensePeriodSummaries: {expensePeriods.Count} expense periods");
 
             var summaries = new List<ExpensePeriodSummary>();
 
@@ -103,6 +111,8 @@ namespace ExpenseTracker.Controllers
 
                 var expenses = expensesQuery.ToList();
 
+                Trace.TraceInformation($"GetExpensePeriodSummaries: {expenses.Count} expenses in expense period {i}");
+
                 summaries.Add(new ExpensePeriodSummary
                 {
                     AmountAvailable = expensePeriod.AmountAvailable,
@@ -111,6 +121,8 @@ namespace ExpenseTracker.Controllers
                     StartDate = expensePeriod.StartDate
                 });
             }
+
+            Trace.TraceInformation($"GetExpensePeriodSummaries: Returning summaries");
 
             return summaries;
         }
