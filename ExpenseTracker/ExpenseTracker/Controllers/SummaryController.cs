@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Web.Http;
 using ExpenseTracker.DataObjects;
@@ -83,12 +82,20 @@ namespace ExpenseTracker.Controllers
                 .Select(accountUser => accountUser.AccountId)
                 .ToList();
 
+            var now = DateTimeOffset.Now;
+
             var expensePeriods = _context.ExpensePeriods
                 .Where(x => userAccounts.Contains(x.AccountId))
-                .Where(x => x.StartDate <= DateTimeOffset.Now)
+                .Where(x => x.StartDate <= now)
                 .Take(10)
                 .OrderByDescending(x => x.StartDate)
                 .ToList();
+
+            var nextExpensePeriod = _context.ExpensePeriods
+                .Where(x => userAccounts.Contains(x.AccountId))
+                .Where(x => x.StartDate > now)
+                .OrderBy(x => x.StartDate)
+                .FirstOrDefault();
 
             var summaries = new List<ExpensePeriodSummary>();
 
@@ -100,7 +107,12 @@ namespace ExpenseTracker.Controllers
                     .Where(x => userAccounts.Contains(x.AccountId))
                     .Where(x => x.Date >= expensePeriod.StartDate);
 
-                if (i > 0)
+                if (i == 0)
+                {
+                    if (nextExpensePeriod != null)
+                        expensesQuery = expensesQuery.Where(x => x.Date < nextExpensePeriod.StartDate);
+                }
+                else
                 {
                     var followingStartDate = expensePeriods[i - 1].StartDate;
                     expensesQuery = expensesQuery.Where(x => x.Date < followingStartDate);
