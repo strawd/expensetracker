@@ -37,8 +37,8 @@ namespace ExpenseTracker.Controllers
             var expensePeriods = _context.ExpensePeriods
                 .Where(x => userAccounts.Contains(x.AccountId))
                 .Where(x => x.StartDate <= now)
-                .Take(10)
                 .OrderByDescending(x => x.StartDate)
+                .Take(10)
                 .ToList();
 
             var nextExpensePeriod = _context.ExpensePeriods
